@@ -4,9 +4,9 @@ import logging
 
 import numpy as np
 import torch
+from detectron2.data import detection_utils as utils
 from fvcore.common.file_io import PathManager
 from PIL import Image
-from detectron2.data import detection_utils as utils
 
 from . import transforms as T
 
@@ -16,11 +16,13 @@ This file contains the default mapping that's applied to "dataset dicts".
 
 __all__ = ["DatasetMapper"]
 
+
 def check_sample_valid(args):
     if args["sample_style"] == "range":
         assert (
             len(args["min_size"]) == 2
         ), f"more than 2 ({len(args['min_size'])}) min_size(s) are provided for ranges"
+
 
 def build_transform_gen(cfg, is_train):
     """
@@ -47,6 +49,7 @@ def build_transform_gen(cfg, is_train):
     logger.info("TransformGens used: " + str(tfm_gens))
 
     return tfm_gens
+
 
 class DatasetMapper:
     """

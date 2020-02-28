@@ -1,7 +1,7 @@
 MODEL:
   META_ARCHITECTURE: "CenterNet"
   BACKBONE:
-    NAME: "build_centernet_backbone"
+    NAME: "build_resnet_backbone"
   RESNETS:
     OUT_FEATURES: ["res3", "res4", "res5"]
   FPN:
