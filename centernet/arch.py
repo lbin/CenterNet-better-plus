@@ -3,13 +3,14 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
-from detectron2.modeling.build import META_ARCH_REGISTRY
+from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
+from detectron2.modeling.backbone import build_backbone
 
-from centernet.layers import ShapeSpec
-from centernet.structures import Boxes, ImageList, Instances
+from detectron2.layers import ShapeSpec
+# from centernet.structures import Boxes, ImageList, Instances
 
-from .generator import CenterNetDecoder, CenterNetGT
-from .loss import modified_focal_loss, reg_l1_loss
+# from .generator import CenterNetDecoder, CenterNetGT
+# from .loss import modified_focal_loss, reg_l1_loss
 
 __all__ = ["CenterNet"]
 
@@ -32,9 +33,7 @@ class CenterNet(nn.Module):
         # Inference parameters:
         self.max_detections_per_image = cfg.TEST.DETECTIONS_PER_IMAGE
         # fmt: on
-        self.backbone = cfg.build_backbone(
-            cfg, input_shape=ShapeSpec(channels=len(cfg.MODEL.PIXEL_MEAN))
-        )
+        self.backbone = build_backbone(cfg, input_shape=ShapeSpec(channels=len(cfg.MODEL.PIXEL_MEAN)))
         self.upsample = cfg.build_upsample_layers(cfg)
         self.head = cfg.build_head(cfg)
         # self.cls_head = cfg.build_cls_head(cfg)

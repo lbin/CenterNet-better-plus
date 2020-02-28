@@ -12,6 +12,7 @@ from detectron2.engine import DefaultTrainer, default_argument_parser, default_s
 from detectron2.evaluation import COCOEvaluator
 
 from centernet import add_centernet_config
+from centernet import * 
 
 
 class Trainer(DefaultTrainer):
