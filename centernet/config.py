@@ -19,3 +19,21 @@ def add_centernet_config(cfg):
     _C.MODEL.CENTERNET.DOWN_SCALE = 4
     _C.MODEL.CENTERNET.MIN_OVERLAP = 0.7
     _C.MODEL.CENTERNET.TENSOR_DIM = 128
+    _C.MODEL.CENTERNET.IN_FEATURES = ["p5"]
+    _C.MODEL.CENTERNET.OUTPUT_SIZE = [128, 128]
+    _C.MODEL.CENTERNET.TRAIN_PIPELINES=[
+                ('CenterAffine', dict(
+                    boarder=128,
+                    output_size=(512, 512),
+                    random_aug=True)),
+                ('RandomFlip', dict()),
+                ('RandomBrightness', dict(intensity_min=0.6, intensity_max=1.4)),
+                ('RandomContrast', dict(intensity_min=0.6, intensity_max=1.4)),
+                ('RandomSaturation', dict(intensity_min=0.6, intensity_max=1.4)),
+                ('RandomLighting', dict(scale=0.1)),
+            ]
+    _C.MODEL.CENTERNET.TEST_PIPELINES=[]
+    _C.MODEL.CENTERNET.LOSS = CN()
+    _C.MODEL.CENTERNET.LOSS.CLS_WEIGHT = 1
+    _C.MODEL.CENTERNET.LOSS.WH_WEIGHT=0.1
+    _C.MODEL.CENTERNET.LOSS.REG_WEIGHT=1

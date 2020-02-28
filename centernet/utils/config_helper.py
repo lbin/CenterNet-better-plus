@@ -5,6 +5,7 @@ import logging
 import re
 
 import six
+
 from colorama import Back, Fore, Style
 
 # python 3.8+ compatibility
@@ -139,7 +140,5 @@ def _check_and_coerce_cfg_value_type(replacement, original, key, full_key):
 
     raise ValueError(
         "Type mismatch ({} vs. {}) with values ({} vs. {}) for config "
-        "key: {}".format(
-            original_type, replacement_type, original, replacement, full_key
-        )
+        "key: {}".format(original_type, replacement_type, original, replacement, full_key)
     )

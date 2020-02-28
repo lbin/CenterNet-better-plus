@@ -4,7 +4,11 @@ import math
 
 import torch.nn as nn
 
-from centernet.layers.deformable.deform_conv_with_off import DeformConvWithOff, ModulatedDeformConvWithOff
+from centernet.layers.deformable.deform_conv_with_off import (
+    DeformConvWithOff,
+    ModulatedDeformConvWithOff,
+)
+
 
 class DeconvLayer(nn.Module):
     def __init__(

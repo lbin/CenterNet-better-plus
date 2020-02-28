@@ -8,6 +8,7 @@ import numpy as np
 import PIL
 import torch
 import torchvision
+
 from tabulate import tabulate
 
 __all__ = ["collect_env_info"]

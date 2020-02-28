@@ -11,10 +11,10 @@ from typing import Any
 import numpy as np
 import torch
 import torch.nn as nn
+from termcolor import colored
 from torch.nn.parallel import DataParallel, DistributedDataParallel
 
 from centernet.utils.file_io import PathManager
-from termcolor import colored
 
 
 class Checkpointer(object):
@@ -91,9 +91,7 @@ class Checkpointer(object):
         """
         if not path:
             # no checkpoint provided
-            self.logger.info(
-                "No checkpoint found. Initializing model from scratch"
-            )
+            self.logger.info("No checkpoint found. Initializing model from scratch")
             return {}
         self.logger.info("Loading checkpoint from {}".format(path))
         if not os.path.isfile(path):
@@ -142,8 +140,7 @@ class Checkpointer(object):
         all_model_checkpoints = [
             os.path.join(self.save_dir, file)
             for file in PathManager.ls(self.save_dir)
-            if PathManager.isfile(os.path.join(self.save_dir, file))
-            and file.endswith(".pth")
+            if PathManager.isfile(os.path.join(self.save_dir, file)) and file.endswith(".pth")
         ]
         return all_model_checkpoints
 
@@ -211,23 +208,15 @@ class Checkpointer(object):
                 if shape_model != shape_checkpoint:
                     self.logger.warning(
                         "'{}' has shape {} in the checkpoint but {} in the "
-                        "model! Skipped.".format(
-                            k, shape_checkpoint, shape_model
-                        )
+                        "model! Skipped.".format(k, shape_checkpoint, shape_model)
                     )
                     checkpoint_state_dict.pop(k)
 
-        incompatible = self.model.load_state_dict(
-            checkpoint_state_dict, strict=False
-        )
+        incompatible = self.model.load_state_dict(checkpoint_state_dict, strict=False)
         if incompatible.missing_keys:
-            self.logger.info(
-                get_missing_parameters_message(incompatible.missing_keys)
-            )
+            self.logger.info(get_missing_parameters_message(incompatible.missing_keys))
         if incompatible.unexpected_keys:
-            self.logger.info(
-                get_unexpected_parameters_message(incompatible.unexpected_keys)
-            )
+            self.logger.info(get_unexpected_parameters_message(incompatible.unexpected_keys))
 
     def _convert_ndarray_to_tensor(self, state_dict: dict):
         """
@@ -240,14 +229,8 @@ class Checkpointer(object):
         # properties.
         for k in list(state_dict.keys()):
             v = state_dict[k]
-            if not isinstance(v, np.ndarray) and not isinstance(
-                v, torch.Tensor
-            ):
-                raise ValueError(
-                    "Unsupported type found in checkpoint! {}: {}".format(
-                        k, type(v)
-                    )
-                )
+            if not isinstance(v, np.ndarray) and not isinstance(v, torch.Tensor):
+                raise ValueError("Unsupported type found in checkpoint! {}: {}".format(k, type(v)))
             if not isinstance(v, torch.Tensor):
                 state_dict[k] = torch.from_numpy(v)
 
@@ -285,9 +268,7 @@ class PeriodicCheckpointer:
         additional_state = {"iteration": iteration}
         additional_state.update(kwargs)
         if (iteration + 1) % self.period == 0:
-            self.checkpointer.save(
-                "model_{:07d}".format(iteration), **additional_state
-            )
+            self.checkpointer.save("model_{:07d}".format(iteration), **additional_state)
         if iteration >= self.max_iter - 1:
             self.checkpointer.save("model_final", **additional_state)
 
@@ -315,9 +296,7 @@ def get_missing_parameters_message(keys: list):
     """
     groups = _group_checkpoint_keys(keys)
     msg = "Some model parameters are not in the checkpoint:\n"
-    msg += "\n".join(
-        "  " + colored(k + _group_to_str(v), "blue") for k, v in groups.items()
-    )
+    msg += "\n".join("  " + colored(k + _group_to_str(v), "blue") for k, v in groups.items())
     return msg
 
 
@@ -332,10 +311,7 @@ def get_unexpected_parameters_message(keys: list):
     """
     groups = _group_checkpoint_keys(keys)
     msg = "The checkpoint contains parameters not used by the model:\n"
-    msg += "\n".join(
-        "  " + colored(k + _group_to_str(v), "magenta")
-        for k, v in groups.items()
-    )
+    msg += "\n".join("  " + colored(k + _group_to_str(v), "magenta") for k, v in groups.items())
     return msg
 
 

@@ -29,9 +29,7 @@ def get_cache_dir(cache_dir: Optional[str] = None) -> str:
         2) otherwise ~/.torch/centernet_cache
     """
     if cache_dir is None:
-        cache_dir = os.path.expanduser(
-            os.getenv("centernet_CACHE", "~/.torch/centernet_cache")
-        )
+        cache_dir = os.path.expanduser(os.getenv("centernet_CACHE", "~/.torch/centernet_cache"))
     return cache_dir
 
 
@@ -112,9 +110,7 @@ class PathHandler:
         """
         raise NotImplementedError()
 
-    def _copy(
-        self, src_path: str, dst_path: str, overwrite: bool = False
-    ) -> bool:
+    def _copy(self, src_path: str, dst_path: str, overwrite: bool = False) -> bool:
         """
         Copies a source path to a destination path.
 
@@ -209,9 +205,7 @@ class NativePathHandler(PathHandler):
     def _open(self, path: str, mode: str = "r") -> IO[Any]:
         return open(path, mode)
 
-    def _copy(
-        self, src_path: str, dst_path: str, overwrite: bool = False
-    ) -> bool:
+    def _copy(self, src_path: str, dst_path: str, overwrite: bool = False) -> bool:
         """
         Copies a source path to a destination path.
 
@@ -276,14 +270,10 @@ class HTTPURLHandler(PathHandler):
         This implementation downloads the remote resource and caches it locally.
         The resource will only be downloaded if not previously requested.
         """
-        if path not in self.cache_map or not os.path.exists(
-            self.cache_map[path]
-        ):
+        if path not in self.cache_map or not os.path.exists(self.cache_map[path]):
             logger = logging.getLogger(__name__)
             parsed_url = urlparse(path)
-            dirname = os.path.join(
-                get_cache_dir(), os.path.dirname(parsed_url.path.lstrip("/"))
-            )
+            dirname = os.path.join(get_cache_dir(), os.path.dirname(parsed_url.path.lstrip("/")))
             filename = path.split("/")[-1]
             cached = os.path.join(dirname, filename)
             with file_lock(cached):
@@ -295,10 +285,7 @@ class HTTPURLHandler(PathHandler):
         return self.cache_map[path]
 
     def _open(self, path: str, mode: str = "r") -> IO[Any]:
-        assert mode in (
-            "r",
-            "rb",
-        ), "{} does not support open with {} mode".format(
+        assert mode in ("r", "rb"), "{} does not support open with {} mode".format(
             self.__class__.__name__, mode
         )
         local_path = self._get_local_path(path)
@@ -358,12 +345,8 @@ class PathManager:
         """
 
         # Copying across handlers is not supported.
-        assert PathManager.__get_path_handler(
-            src_path
-        ) == PathManager.__get_path_handler(dst_path)
-        return PathManager.__get_path_handler(src_path)._copy(
-            src_path, dst_path, overwrite
-        )
+        assert PathManager.__get_path_handler(src_path) == PathManager.__get_path_handler(dst_path)
+        return PathManager.__get_path_handler(src_path)._copy(src_path, dst_path, overwrite)
 
     @staticmethod
     def get_local_path(path: str) -> str:
@@ -473,11 +456,7 @@ class PathManager:
         # Sort path handlers in reverse order so longer prefixes take priority,
         # eg: http://foo/bar before http://foo
         PathManager._PATH_HANDLERS = OrderedDict(
-            sorted(
-                PathManager._PATH_HANDLERS.items(),
-                key=lambda t: t[0],
-                reverse=True,
-            )
+            sorted(PathManager._PATH_HANDLERS.items(), key=lambda t: t[0], reverse=True)
         )
 
 

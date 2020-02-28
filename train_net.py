@@ -9,10 +9,12 @@ import os
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, launch
+from detectron2.data import build_detection_test_loader, build_detection_train_loader
 from detectron2.evaluation import COCOEvaluator
 
 from centernet import add_centernet_config
-from centernet import * 
+
+from centernet.dataset_mapper import DatasetMapper
 
 
 class Trainer(DefaultTrainer):
@@ -21,6 +23,14 @@ class Trainer(DefaultTrainer):
         if output_folder is None:
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
         return COCOEvaluator(dataset_name, cfg, True, output_folder)
+    
+    @classmethod
+    def build_test_loader(cls, cfg, dataset_name):
+        return build_detection_test_loader(cfg, dataset_name, mapper=DatasetMapper(cfg, False))
+
+    @classmethod
+    def build_train_loader(cls, cfg):
+        return build_detection_train_loader(cfg, mapper=DatasetMapper(cfg, True))
 
 
 def setup(args):

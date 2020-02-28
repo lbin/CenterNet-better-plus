@@ -71,12 +71,7 @@ def timeit(num_iters: int = -1, warmup_iters: int = 0):
 
 
 def benchmark(
-    func,
-    bm_name: str,
-    kwargs_list: List[Dict],
-    *,
-    num_iters: int = -1,
-    warmup_iters: int = 0
+    func, bm_name: str, kwargs_list: List[Dict], *, num_iters: int = -1, warmup_iters: int = 0
 ) -> None:
     """
     Benchmark the input function and print out the results.
@@ -108,21 +103,14 @@ def benchmark(
     for kwargs in kwargs_list:
         func_bm = func(**kwargs)
 
-        time_func = timeit(num_iters=num_iters, warmup_iters=warmup_iters)(
-            func_bm
-        )
+        time_func = timeit(num_iters=num_iters, warmup_iters=warmup_iters)(func_bm)
 
         ret = time_func()
         name = bm_name
         if kwargs:
             name += "_" + "_".join(str(v) for k, v in kwargs.items())
         outputs.append(
-            [
-                name,
-                str(ret["mean"] * 1000000),
-                str(ret["max"] * 1000000),
-                str(ret["iterations"]),
-            ]
+            [name, str(ret["mean"] * 1000000), str(ret["max"] * 1000000), str(ret["iterations"])]
         )
     outputs = np.array(outputs)
     # Calculate column widths for metrics table.
@@ -133,25 +121,14 @@ def benchmark(
     dash = "-" * 80
     print(
         "{:{}s} {:>{}s} {:>{}s} {:>{}s}".format(
-            "Benchmark",
-            c1,
-            "Avg Time(μs)",
-            c2,
-            "Peak Time(μs)",
-            c3,
-            "Iterations",
-            c4,
+            "Benchmark", c1, "Avg Time(μs)", c2, "Peak Time(μs)", c3, "Iterations", c4
         )
     )
     print(dash)
     for output in outputs:
         print(
             "{:{}s} {:15.0f} {:15.0f} {:14d}".format(
-                output[0],
-                c1,
-                float(output[1]),
-                float(output[2]),
-                int(output[3]),
+                output[0], c1, float(output[1]), float(output[2]), int(output[3])
             )
         )
     print(dash)

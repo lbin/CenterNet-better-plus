@@ -6,10 +6,10 @@ import os
 import sys
 from collections import Counter
 
-from tabulate import tabulate
+from termcolor import colored
 
 from centernet.utils.file_io import PathManager
-from termcolor import colored
+from tabulate import tabulate
 
 
 class _ColorfulFormatter(logging.Formatter):
@@ -218,7 +218,10 @@ def create_table_with_header(header_dict, headers=["category", "AP"], min_cols=6
     result_pair = [x for pair in header_dict.items() for x in pair]
     row_pair = itertools.zip_longest(*[result_pair[i::num_cols] for i in range(num_cols)])
     table = tabulate(
-        row_pair, tablefmt="pipe", floatfmt=".3f",
+        row_pair,
+        tablefmt="pipe",
+        floatfmt=".3f",
         headers=headers * (num_cols // len(headers)),
-        numalign="left")
+        numalign="left",
+    )
     return table

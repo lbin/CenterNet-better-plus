@@ -7,10 +7,16 @@ from .deform_conv import DeformConv, ModulatedDeformConv
 
 
 class DeformConvWithOff(nn.Module):
-
-    def __init__(self, in_channels, out_channels,
-                 kernel_size=3, stride=1, padding=1,
-                 dilation=1, deformable_groups=1):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size=3,
+        stride=1,
+        padding=1,
+        dilation=1,
+        deformable_groups=1,
+    ):
         super(DeformConvWithOff, self).__init__()
         self.offset_conv = nn.Conv2d(
             in_channels,
@@ -20,8 +26,12 @@ class DeformConvWithOff(nn.Module):
             padding=padding,
         )
         self.dcn = DeformConv(
-            in_channels, out_channels, kernel_size=kernel_size,
-            stride=stride, padding=padding, dilation=dilation,
+            in_channels,
+            out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
             deformable_groups=deformable_groups,
         )
 
@@ -32,10 +42,16 @@ class DeformConvWithOff(nn.Module):
 
 
 class ModulatedDeformConvWithOff(nn.Module):
-
-    def __init__(self, in_channels, out_channels,
-                 kernel_size=3, stride=1, padding=1,
-                 dilation=1, deformable_groups=1):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size=3,
+        stride=1,
+        padding=1,
+        dilation=1,
+        deformable_groups=1,
+    ):
         super(ModulatedDeformConvWithOff, self).__init__()
         self.offset_mask_conv = nn.Conv2d(
             in_channels,
@@ -45,8 +61,12 @@ class ModulatedDeformConvWithOff(nn.Module):
             padding=padding,
         )
         self.dcnv2 = ModulatedDeformConv(
-            in_channels, out_channels, kernel_size=kernel_size,
-            stride=stride, padding=padding, dilation=dilation,
+            in_channels,
+            out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
             deformable_groups=deformable_groups,
         )
 

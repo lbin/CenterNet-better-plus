@@ -7,8 +7,103 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from centernet.data.transforms.transform_gen import CenterAffine
-from centernet.nn_utils.feature_utils import gather_feature
+
+from detectron2.data.transforms.transform_gen import TransformGen
+
+def gather_feature(fmap, index, mask=None, use_transform=False):
+    if use_transform:
+        # change a (N, C, H, W) tenor to (N, HxW, C) shape
+        batch, channel = fmap.shape[:2]
+        fmap = fmap.view(batch, channel, -1).permute((0, 2, 1)).contiguous()
+
+    dim = fmap.size(-1)
+    index  = index.unsqueeze(len(index.shape)).expand(*index.shape, dim)
+    fmap = fmap.gather(dim=1, index=index)
+    if mask is not None:
+        # this part is not called in Res18 dcn COCO
+        mask = mask.unsqueeze(2).expand_as(fmap)
+        fmap = fmap[mask]
+        fmap = fmap.reshape(-1, dim)
+    return fmap
+
+class CenterAffine(TransformGen):
+    """
+    Affine Transform for CenterNet
+    """
+
+    def __init__(self, boarder, output_size, random_aug=True):
+        """
+        Args:
+            boarder(int): boarder size of image
+            output_size(tuple): a tuple represents (width, height) of image
+            random_aug(bool): whether apply random augmentation on annos or not
+        """
+        super().__init__()
+        self._init(locals())
+
+    def get_transform(self, img):
+        """
+        generate one `AffineTransform` for input image
+        """
+        img_shape = img.shape[:2]
+        center, scale = self.generate_center_and_scale(img_shape)
+        src, dst = self.generate_src_and_dst(center, scale, self.output_size)
+        return AffineTransform(src, dst, self.output_size)
+
+    @staticmethod
+    def _get_boarder(boarder, size):
+        """
+        decide the boarder size of image
+        """
+        # NOTE This func may be reimplemented in the future
+        i = 1
+        size //= 2
+        while size <= boarder // i:
+            i *= 2
+        return boarder // i
+
+    def generate_center_and_scale(self, img_shape):
+        r"""
+        generate center and scale for image randomly
+        Args:
+            shape(tuple): a tuple represents (height, width) of image
+        """
+        height, width = img_shape
+        center = np.array([width / 2, height / 2], dtype=np.float32)
+        scale = float(max(img_shape))
+        if self.random_aug:
+            scale = scale * np.random.choice(np.arange(0.6, 1.4, 0.1))
+            h_boarder = self._get_boarder(self.boarder, height)
+            w_boarder = self._get_boarder(self.boarder, width)
+            center[0] = np.random.randint(low=w_boarder, high=width - w_boarder)
+            center[1] = np.random.randint(low=h_boarder, high=height - h_boarder)
+        else:
+            raise NotImplementedError("Non-random augmentation not implemented")
+
+        return center, scale
+
+    @staticmethod
+    def generate_src_and_dst(center, size, output_size):
+        r"""
+        generate source and destination for affine transform
+        """
+        if not isinstance(size, np.ndarray) and not isinstance(size, list):
+            size = np.array([size, size], dtype=np.float32)
+        src = np.zeros((3, 2), dtype=np.float32)
+        src_w = size[0]
+        src_dir = [0, src_w * -0.5]
+        src[0, :] = center
+        src[1, :] = src[0, :] + src_dir
+        src[2, :] = src[1, :] + (src_dir[1], -src_dir[0])
+
+        dst = np.zeros((3, 2), dtype=np.float32)
+        dst_w, dst_h = output_size
+        dst_dir = [0, dst_w * -0.5]
+        dst[0, :] = [dst_w * 0.5, dst_h * 0.5]
+        dst[1, :] = dst[0, :] + dst_dir
+        dst[2, :] = dst[1, :] + (dst_dir[1], -dst_dir[0])
+
+        return src, dst
 
 
 class CenterNetDecoder(object):

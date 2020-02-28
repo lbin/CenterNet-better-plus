@@ -3,20 +3,27 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
-from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
 from detectron2.modeling.backbone import build_backbone
+from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
+from detectron2.structures import Boxes, ImageList, Instances
 
-from detectron2.layers import ShapeSpec
+from .centernet_decode import CenterNetDecoder
 from .centernet_deconv import CenternetDeconv
+from .centernet_gt import CenterNetGT
 from .centernet_head import CenternetHead
+from .focal_loss import modified_focal_loss
+from .reg_l1_loss import reg_l1_loss
 
-def build_upsample_layers(cfg, ):
+
+def build_upsample_layers(cfg,):
     upsample = CenternetDeconv(cfg)
     return upsample
 
-def build_head(cfg, ):
+
+def build_head(cfg,):
     head = CenternetHead(cfg)
     return head
+
 
 __all__ = ["CenterNet"]
 
@@ -35,19 +42,11 @@ class CenterNet(nn.Module):
 
         # fmt: off
         self.num_classes = cfg.MODEL.CENTERNET.NUM_CLASSES
-        # Loss parameters:
-        # Inference parameters:
-        self.max_detections_per_image = cfg.TEST.DETECTIONS_PER_IMAGE
+        self.in_features = cfg.MODEL.CENTERNET.IN_FEATURES
         # fmt: on
-        self.backbone = build_backbone(cfg, input_shape=ShapeSpec(channels=len(cfg.MODEL.PIXEL_MEAN)))
+        self.backbone = build_backbone(cfg)
         self.upsample = build_upsample_layers(cfg)
         self.head = build_head(cfg)
-        # self.cls_head = cfg.build_cls_head(cfg)
-        # self.wh_head = cfg.build_width_height_head(cfg)
-        # self.reg_head = cfg.build_center_reg_head(cfg)
-
-        # backbone_shape = self.backbone.output_shape()
-        # feature_shapes = [backbone_shape[f] for f in self.in_features]
 
         self.mean, self.std = cfg.MODEL.PIXEL_MEAN, cfg.MODEL.PIXEL_STD
         pixel_mean = torch.Tensor(self.mean).to(self.device).view(3, 1, 1)
@@ -77,7 +76,7 @@ class CenterNet(nn.Module):
         if not self.training:
             return self.inference(images)
 
-        features = self.backbone(images.tensor)
+        features = self.backbone(images.tensor)['res5']
         up_fmap = self.upsample(features)
         pred_dict = self.head(up_fmap)
 
@@ -122,9 +121,9 @@ class CenterNet(nn.Module):
         # regression loss
         loss_reg = reg_l1_loss(pred_dict["reg"], mask, index, gt_dict["reg"])
 
-        loss_cls *= self.cfg.MODEL.LOSS.CLS_WEIGHT
-        loss_wh *= self.cfg.MODEL.LOSS.WH_WEIGHT
-        loss_reg *= self.cfg.MODEL.LOSS.REG_WEIGHT
+        loss_cls *= self.cfg.MODEL.CENTERNET.LOSS.CLS_WEIGHT
+        loss_wh *= self.cfg.MODEL.CENTERNET.LOSS.WH_WEIGHT
+        loss_reg *= self.cfg.MODEL.CENTERNET.LOSS.REG_WEIGHT
 
         loss = {"loss_cls": loss_cls, "loss_box_wh": loss_wh, "loss_center_reg": loss_reg}
         # print(loss)

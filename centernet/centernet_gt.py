@@ -11,7 +11,7 @@ class CenterNetGT(object):
     def generate(config, batched_input):
         box_scale = 1 / config.MODEL.CENTERNET.DOWN_SCALE
         num_classes = config.MODEL.CENTERNET.NUM_CLASSES
-        output_size = config.INPUT.OUTPUT_SIZE
+        output_size = config.MODEL.CENTERNET.OUTPUT_SIZE
         min_overlap = config.MODEL.CENTERNET.MIN_OVERLAP
         tensor_dim = config.MODEL.CENTERNET.TENSOR_DIM
 

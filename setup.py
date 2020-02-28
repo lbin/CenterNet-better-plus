@@ -55,6 +55,7 @@ def get_extensions():
 
     return ext_modules
 
+
 setup(
     name="centernet",
     version="0.1.0",
@@ -79,5 +80,5 @@ setup(
     ],
     extras_require={"all": ["shapely", "psutil"]},
     ext_modules=get_extensions(),
-    cmdclass={"build_ext": torch.utils.cpp_extension.BuildExtension}
+    cmdclass={"build_ext": torch.utils.cpp_extension.BuildExtension},
 )

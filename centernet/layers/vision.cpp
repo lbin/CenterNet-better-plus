@@ -2,8 +2,8 @@
 // Modified by Feng Wang
 
 #include <cuda_runtime_api.h>
-#include <torch/types.h>
 #include <torch/extension.h>
+#include <torch/types.h>
 #include "ROIAlign/ROIAlign.h"
 #include "deformable/deform_conv.h"
 
