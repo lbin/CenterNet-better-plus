@@ -76,7 +76,7 @@ class CenterNet(nn.Module):
         if not self.training:
             return self.inference(images)
 
-        features = self.backbone(images.tensor)['res5']
+        features = self.backbone(images.tensor)["res5"]
         up_fmap = self.upsample(features)
         pred_dict = self.head(up_fmap)
 

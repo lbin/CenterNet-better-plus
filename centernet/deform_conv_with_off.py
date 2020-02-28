@@ -2,8 +2,7 @@
 # -*- coding:utf-8 -*-
 import torch
 import torch.nn as nn
-
-from .deform_conv import DeformConv, ModulatedDeformConv
+from detectron2.layers.deform_conv import DeformConv, ModulatedDeformConv
 
 
 class DeformConvWithOff(nn.Module):

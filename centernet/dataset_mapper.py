@@ -4,15 +4,11 @@ import logging
 
 import numpy as np
 import torch
+from detectron2.data import transforms as T
+from fvcore.common.file_io import PathManager
 from PIL import Image
 
-
 from . import detection_utils as utils
-
-from fvcore.common.file_io import PathManager
-
-from detectron2.data import MetadataCatalog
-from detectron2.data import transforms as T
 
 """
 This file contains the default mapping that's applied to "dataset dicts".

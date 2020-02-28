@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import torch.nn.functional as F
 
+
 def gather_feature(fmap, index, mask=None, use_transform=False):
     if use_transform:
         # change a (N, C, H, W) tenor to (N, HxW, C) shape
@@ -9,7 +10,7 @@ def gather_feature(fmap, index, mask=None, use_transform=False):
         fmap = fmap.view(batch, channel, -1).permute((0, 2, 1)).contiguous()
 
     dim = fmap.size(-1)
-    index  = index.unsqueeze(len(index.shape)).expand(*index.shape, dim)
+    index = index.unsqueeze(len(index.shape)).expand(*index.shape, dim)
     fmap = fmap.gather(dim=1, index=index)
     if mask is not None:
         # this part is not called in Res18 dcn COCO

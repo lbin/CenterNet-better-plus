@@ -3,19 +3,12 @@
 # Modified by Feng Wang.
 # File: transformer.py
 
-import inspect
-import pprint
-import sys
-from abc import ABCMeta, abstractmethod
-
-import numpy as np
-from PIL import Image
 import cv2
-from detectron2.data.transforms import TransformGen, Transform
+import numpy as np
+from detectron2.data.transforms import Transform, TransformGen
 
-__all__ = [
-    "CenterAffine",
-]
+__all__ = ["CenterAffine", "AffineTransform"]
+
 
 class AffineTransform(Transform):
     """
@@ -62,6 +55,7 @@ class AffineTransform(Transform):
         coords[..., 0] = np.clip(coords[..., 0], 0, w - 1)
         coords[..., 1] = np.clip(coords[..., 1], 0, h - 1)
         return coords
+
 
 class CenterAffine(TransformGen):
     """
