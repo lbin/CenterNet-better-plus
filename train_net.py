@@ -6,12 +6,11 @@ This script is a simplified version of the training script in detectron2/tools.
 
 import os
 
+from centernet import add_centernet_config
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, launch
 from detectron2.evaluation import COCOEvaluator
-
-from tridentnet import add_tridentnet_config
 
 
 class Trainer(DefaultTrainer):
@@ -27,7 +26,7 @@ def setup(args):
     Create configs and perform basic setups.
     """
     cfg = get_cfg()
-    add_tridentnet_config(cfg)
+    add_centernet_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()

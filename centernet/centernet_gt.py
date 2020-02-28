@@ -7,7 +7,6 @@ import torch
 
 
 class CenterNetGT(object):
-
     @staticmethod
     def generate(config, batched_input):
         box_scale = 1 / config.MODEL.CENTERNET.DOWN_SCALE
@@ -20,7 +19,7 @@ class CenterNetGT(object):
         for data in batched_input:
             # img_size = (data['height'], data['width'])
 
-            bbox_dict = data['instances'].get_fields()
+            bbox_dict = data["instances"].get_fields()
 
             # init gt tensors
             gt_scoremap = torch.zeros(num_classes, *output_size)
@@ -30,7 +29,7 @@ class CenterNetGT(object):
             gt_index = torch.zeros(tensor_dim)
             # pass
 
-            boxes, classes = bbox_dict['gt_boxes'], bbox_dict['gt_classes']
+            boxes, classes = bbox_dict["gt_boxes"], bbox_dict["gt_classes"]
             num_boxes = boxes.tensor.shape[0]
             boxes.scale(box_scale, box_scale)
 
@@ -44,10 +43,7 @@ class CenterNetGT(object):
             box_tensor = boxes.tensor
             wh[..., 0] = box_tensor[..., 2] - box_tensor[..., 0]
             wh[..., 1] = box_tensor[..., 3] - box_tensor[..., 1]
-            CenterNetGT.generate_score_map(
-                gt_scoremap, classes, wh,
-                centers_int, min_overlap,
-            )
+            CenterNetGT.generate_score_map(gt_scoremap, classes, wh, centers_int, min_overlap)
             gt_wh[:num_boxes] = wh
 
             scoremap_list.append(gt_scoremap)
@@ -84,23 +80,23 @@ class CenterNetGT(object):
         box_tensor = torch.Tensor(box_size)
         width, height = box_tensor[..., 0], box_tensor[..., 1]
 
-        a1  = 1
-        b1  = (height + width)
-        c1  = width * height * (1 - min_overlap) / (1 + min_overlap)
+        a1 = 1
+        b1 = height + width
+        c1 = width * height * (1 - min_overlap) / (1 + min_overlap)
         sq1 = torch.sqrt(b1 ** 2 - 4 * a1 * c1)
-        r1  = (b1 + sq1) / 2
+        r1 = (b1 + sq1) / 2
 
-        a2  = 4
-        b2  = 2 * (height + width)
-        c2  = (1 - min_overlap) * width * height
+        a2 = 4
+        b2 = 2 * (height + width)
+        c2 = (1 - min_overlap) * width * height
         sq2 = torch.sqrt(b2 ** 2 - 4 * a2 * c2)
-        r2  = (b2 + sq2) / 2
+        r2 = (b2 + sq2) / 2
 
-        a3  = 4 * min_overlap
-        b3  = -2 * min_overlap * (height + width)
-        c3  = (min_overlap - 1) * width * height
+        a3 = 4 * min_overlap
+        b3 = -2 * min_overlap * (height + width)
+        c3 = (min_overlap - 1) * width * height
         sq3 = torch.sqrt(b3 ** 2 - 4 * a3 * c3)
-        r3  = (b3 + sq3) / 2
+        r3 = (b3 + sq3) / 2
 
         return torch.min(r1, torch.min(r2, r3))
 
@@ -108,7 +104,7 @@ class CenterNetGT(object):
     def gaussian2D(radius, sigma=1):
         # m, n = [(s - 1.) / 2. for s in shape]
         m, n = radius
-        y, x = np.ogrid[-m:m + 1, -n:n + 1]
+        y, x = np.ogrid[-m : m + 1, -n : n + 1]
 
         gauss = np.exp(-(x * x + y * y) / (2 * sigma * sigma))
         gauss[gauss < np.finfo(gauss.dtype).eps * gauss.max()] = 0
@@ -125,9 +121,9 @@ class CenterNetGT(object):
         left, right = min(x, radius), min(width - x, radius + 1)
         top, bottom = min(y, radius), min(height - y, radius + 1)
 
-        masked_fmap  = fmap[y - top:y + bottom, x - left:x + right]
-        masked_gaussian = gaussian[radius - top:radius + bottom, radius - left:radius + right]
+        masked_fmap = fmap[y - top : y + bottom, x - left : x + right]
+        masked_gaussian = gaussian[radius - top : radius + bottom, radius - left : radius + right]
         if min(masked_gaussian.shape) > 0 and min(masked_fmap.shape) > 0:
             masked_fmap = torch.max(masked_fmap, masked_gaussian * k)
-            fmap[y - top:y + bottom, x - left:x + right] = masked_fmap
+            fmap[y - top : y + bottom, x - left : x + right] = masked_fmap
         # return fmap

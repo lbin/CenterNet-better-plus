@@ -15,6 +15,7 @@ class CenterNet(nn.Module):
     """
     Implement CenterNet (https://arxiv.org/abs/1904.07850).
     """
+
     def __init__(self, cfg):
         super().__init__()
 
@@ -96,31 +97,27 @@ class CenterNet(nn.Module):
         }
         """
         # scoremap loss
-        pred_score = pred_dict['cls']
+        pred_score = pred_dict["cls"]
         cur_device = pred_score.device
         for k in gt_dict:
             gt_dict[k] = gt_dict[k].to(cur_device)
 
-        loss_cls = modified_focal_loss(pred_score, gt_dict['score_map'])
+        loss_cls = modified_focal_loss(pred_score, gt_dict["score_map"])
 
-        mask = gt_dict['reg_mask']
-        index = gt_dict['index']
+        mask = gt_dict["reg_mask"]
+        index = gt_dict["index"]
         index = index.to(torch.long)
         # width and height loss, better version
-        loss_wh = reg_l1_loss(pred_dict['wh'], mask, index, gt_dict['wh'])
+        loss_wh = reg_l1_loss(pred_dict["wh"], mask, index, gt_dict["wh"])
 
         # regression loss
-        loss_reg = reg_l1_loss(pred_dict['reg'], mask, index, gt_dict['reg'])
+        loss_reg = reg_l1_loss(pred_dict["reg"], mask, index, gt_dict["reg"])
 
         loss_cls *= self.cfg.MODEL.LOSS.CLS_WEIGHT
         loss_wh *= self.cfg.MODEL.LOSS.WH_WEIGHT
         loss_reg *= self.cfg.MODEL.LOSS.REG_WEIGHT
 
-        loss = {
-            "loss_cls": loss_cls,
-            "loss_box_wh": loss_wh,
-            "loss_center_reg": loss_reg,
-        }
+        loss = {"loss_cls": loss_cls, "loss_box_wh": loss_wh, "loss_center_reg": loss_reg}
         # print(loss)
         return loss
 
@@ -138,23 +135,23 @@ class CenterNet(nn.Module):
         center_wh = np.array([w // 2, h // 2], dtype=np.float32)
         size_wh = np.array([new_w, new_h], dtype=np.float32)
         down_scale = self.cfg.MODEL.CENTERNET.DOWN_SCALE
-        img_info = dict(center=center_wh, size=size_wh,
-                        height=new_h // down_scale,
-                        width=new_w // down_scale)
+        img_info = dict(
+            center=center_wh, size=size_wh, height=new_h // down_scale, width=new_w // down_scale
+        )
 
         pad_value = [-x / y for x, y in zip(self.mean, self.std)]
         aligned_img = torch.Tensor(pad_value).reshape((1, -1, 1, 1)).expand(n, c, new_h, new_w)
         aligned_img = aligned_img.to(images.tensor.device)
 
         pad_w, pad_h = math.ceil((new_w - w) / 2), math.ceil((new_h - h) / 2)
-        aligned_img[..., pad_h:h + pad_h, pad_w:w + pad_w] = images.tensor
+        aligned_img[..., pad_h : h + pad_h, pad_w : w + pad_w] = images.tensor
 
         features = self.backbone(aligned_img)
         up_fmap = self.upsample(features)
         pred_dict = self.head(up_fmap)
         results = self.decode_prediction(pred_dict, img_info)
 
-        ori_w, ori_h = img_info['center'] * 2
+        ori_w, ori_h = img_info["center"] * 2
         det_instance = Instances((int(ori_h), int(ori_w)), **results)
 
         return [{"instances": det_instance}]
