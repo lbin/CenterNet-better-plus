@@ -1,6 +1,6 @@
 # CenterNet-better-plus
 
-This repo is implemented based on my dl_lib, some parts of  code is based on [detectron2](https://github.com/facebookresearch/detectron2) and [CenterNet-better](https://github.com/FateScript/CenterNet-better/edit/master/README.md)
+This repo is implemented based on [detectron2](https://github.com/facebookresearch/detectron2) and [CenterNet-better](https://github.com/FateScript/CenterNet-better/edit/master/README.md)
 
 ## Motivation
 

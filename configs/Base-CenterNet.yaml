@@ -7,8 +7,14 @@ MODEL:
   FPN:
     IN_FEATURES: ["res3", "res4", "res5"]
   CENTERNET:
-    IOU_THRESHOLDS: [0.4, 0.5]
-    IOU_LABELS: [0, -1, 1]
+    DECONV_CHANNEL: [2048, 256, 128, 64]
+    DECONV_KERNEL: [4, 4, 4]
+    NUM_CLASSES: 80
+    MODULATE_DEFORM: True
+    BIAS_VALUE: -2.19
+    DOWN_SCALE: 4
+    MIN_OVERLAP: 0.7
+    TENSOR_DIM: 128
 DATASETS:
   TRAIN: ("coco_2017_train",)
   TEST: ("coco_2017_val",)

@@ -3,6 +3,7 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
+from detectron2.modeling.build import META_ARCH_REGISTRY
 
 from centernet.layers import ShapeSpec
 from centernet.structures import Boxes, ImageList, Instances
@@ -10,7 +11,10 @@ from centernet.structures import Boxes, ImageList, Instances
 from .generator import CenterNetDecoder, CenterNetGT
 from .loss import modified_focal_loss, reg_l1_loss
 
+__all__ = ["CenterNet"]
 
+
+@META_ARCH_REGISTRY.register()
 class CenterNet(nn.Module):
     """
     Implement CenterNet (https://arxiv.org/abs/1904.07850).
