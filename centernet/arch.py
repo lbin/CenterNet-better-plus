@@ -7,10 +7,16 @@ from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
 from detectron2.modeling.backbone import build_backbone
 
 from detectron2.layers import ShapeSpec
-# from centernet.structures import Boxes, ImageList, Instances
+from .centernet_deconv import CenternetDeconv
+from .centernet_head import CenternetHead
 
-# from .generator import CenterNetDecoder, CenterNetGT
-# from .loss import modified_focal_loss, reg_l1_loss
+def build_upsample_layers(cfg, ):
+    upsample = CenternetDeconv(cfg)
+    return upsample
+
+def build_head(cfg, ):
+    head = CenternetHead(cfg)
+    return head
 
 __all__ = ["CenterNet"]
 
@@ -34,8 +40,8 @@ class CenterNet(nn.Module):
         self.max_detections_per_image = cfg.TEST.DETECTIONS_PER_IMAGE
         # fmt: on
         self.backbone = build_backbone(cfg, input_shape=ShapeSpec(channels=len(cfg.MODEL.PIXEL_MEAN)))
-        self.upsample = cfg.build_upsample_layers(cfg)
-        self.head = cfg.build_head(cfg)
+        self.upsample = build_upsample_layers(cfg)
+        self.head = build_head(cfg)
         # self.cls_head = cfg.build_cls_head(cfg)
         # self.wh_head = cfg.build_width_height_head(cfg)
         # self.reg_head = cfg.build_center_reg_head(cfg)
