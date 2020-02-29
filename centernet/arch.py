@@ -154,8 +154,7 @@ class CenterNet(nn.Module):
         pad_w, pad_h = math.ceil((new_w - w) / 2), math.ceil((new_h - h) / 2)
         aligned_img[..., pad_h : h + pad_h, pad_w : w + pad_w] = images.tensor
 
-        features = self.backbone(aligned_img)
-        features = self.backbone(images.tensor)["res5"]
+        features = self.backbone(aligned_img)["res5"]
         up_fmap = self.upsample(features)
         pred_dict = self.head(up_fmap)
         results = self.decode_prediction(pred_dict, img_info)
