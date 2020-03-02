@@ -53,30 +53,26 @@ def build_transform_gen(cfg, is_train):
 
 class DatasetMapper:
     """
-    A callable which takes a dataset dict in dl_lib Dataset format,
+    A callable which takes a dataset dict in Detectron2 Dataset format,
     and map it into a format used by the model.
-
     This is the default callable to be used to map your dataset dict into training data.
-    You may need to follow it to implement your own one for customized logic.
-
+    You may need to follow it to implement your own one for customized logic,
+    such as a different way to read or transform images.
+    See :doc:`/tutorials/data_loading` for details.
     The callable currently does the following:
-
     1. Read the image from "file_name"
     2. Applies cropping/geometric transforms to the image and annotations
     3. Prepare data and annotations to Tensor and :class:`Instances`
     """
 
     def __init__(self, cfg, is_train=True):
-
         if cfg.INPUT.CROP.ENABLED and is_train:
             self.crop_gen = T.RandomCrop(cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE)
             logging.getLogger(__name__).info("CropGen used in training: " + str(self.crop_gen))
         else:
             self.crop_gen = None
 
-        self.eval_with_gt = cfg.TEST.get("WITH_GT", False)
-
-        self.tfm_gens = build_transform_gen(cfg, is_train)
+        self.tfm_gens = utils.build_transform_gen(cfg, is_train)
 
         # fmt: off
         self.img_format     = cfg.INPUT.FORMAT
@@ -103,10 +99,9 @@ class DatasetMapper:
     def __call__(self, dataset_dict):
         """
         Args:
-            dataset_dict (dict): Metadata of one image, in dl_lib Dataset format.
-
+            dataset_dict (dict): Metadata of one image, in Detectron2 Dataset format.
         Returns:
-            dict: a format that builtin models in dl_lib accept
+            dict: a format that builtin models in detectron2 accept
         """
         dataset_dict = copy.deepcopy(dataset_dict)  # it will be modified by code below
         # USER: Write your own image loading if it's not from a file
@@ -136,8 +131,7 @@ class DatasetMapper:
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
         # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
-        dataset_dict["image"] = torch.as_tensor(image.transpose(2, 0, 1).astype("float32"))
-        # Can use uint8 if it turns out to be slow some day
+        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
 
         # USER: Remove if you don't use pre-computed proposals.
         if self.load_proposals:
@@ -145,7 +139,8 @@ class DatasetMapper:
                 dataset_dict, image_shape, transforms, self.min_box_side_len, self.proposal_topk
             )
 
-        if not self.is_train and not self.eval_with_gt:
+        if not self.is_train:
+            # USER: Modify this if you want to keep them for some reason.
             dataset_dict.pop("annotations", None)
             dataset_dict.pop("sem_seg_file_name", None)
             return dataset_dict
