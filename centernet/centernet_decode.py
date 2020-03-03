@@ -13,7 +13,7 @@ def gather_feature(fmap, index, mask=None, use_transform=False):
         fmap = fmap.view(batch, channel, -1).permute((0, 2, 1)).contiguous()
 
     dim = fmap.size(-1)
-    index  = index.unsqueeze(len(index.shape)).expand(*index.shape, dim)
+    index = index.unsqueeze(len(index.shape)).expand(*index.shape, dim)
     fmap = fmap.gather(dim=1, index=index)
     if mask is not None:
         # this part is not called in Res18 dcn COCO
@@ -22,8 +22,8 @@ def gather_feature(fmap, index, mask=None, use_transform=False):
         fmap = fmap.reshape(-1, dim)
     return fmap
 
-class CenterNetDecoder(object):
 
+class CenterNetDecoder(object):
     @staticmethod
     def decode(fmap, wh, reg=None, cat_spec_wh=False, K=100):
         r"""
@@ -58,13 +58,11 @@ class CenterNetDecoder(object):
         else:
             wh = wh.reshape(batch, K, 2)
 
-        clses  = clses.reshape(batch, K, 1).float()
+        clses = clses.reshape(batch, K, 1).float()
         scores = scores.reshape(batch, K, 1)
 
         half_w, half_h = wh[..., 0:1] / 2, wh[..., 1:2] / 2
-        bboxes = torch.cat([xs - half_w, ys - half_h,
-                            xs + half_w, ys + half_h],
-                           dim=2)
+        bboxes = torch.cat([xs - half_w, ys - half_h, xs + half_w, ys + half_h], dim=2)
 
         detections = (bboxes, scores, clses)
 
@@ -82,9 +80,9 @@ class CenterNetDecoder(object):
         """
         boxes = boxes.cpu().numpy().reshape(-1, 4)
 
-        center = img_info['center']
-        size = img_info['size']
-        output_size = (img_info['width'], img_info['height'])
+        center = img_info["center"]
+        size = img_info["size"]
+        output_size = (img_info["width"], img_info["height"])
         src, dst = CenterAffine.generate_src_and_dst(center, size, output_size)
         trans = cv2.getAffineTransform(np.float32(dst), np.float32(src))
 

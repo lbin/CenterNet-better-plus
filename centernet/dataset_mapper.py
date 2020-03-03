@@ -3,9 +3,8 @@ import logging
 
 import numpy as np
 import torch
-from PIL import Image
-
 from fvcore.common.file_io import PathManager
+from PIL import Image
 
 from . import detection_utils as utils
 from . import transforms as T

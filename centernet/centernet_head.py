@@ -3,7 +3,6 @@ import torch.nn as nn
 
 
 class SingleHead(nn.Module):
-
     def __init__(self, in_channel, out_channel, bias_fill=False, bias_value=0):
         super(SingleHead, self).__init__()
         self.feat_conv = nn.Conv2d(in_channel, in_channel, kernel_size=3, padding=1)
@@ -24,6 +23,7 @@ class CenternetHead(nn.Module):
     The head used in CenterNet for object classification and box regression.
     It has three subnet, with a common structure but separate parameters.
     """
+
     def __init__(self, cfg):
         super(CenternetHead, self).__init__()
         self.cls_head = SingleHead(
@@ -40,9 +40,5 @@ class CenternetHead(nn.Module):
         cls = torch.sigmoid(cls)
         wh = self.wh_head(x)
         reg = self.reg_head(x)
-        pred = {
-            'cls': cls,
-            'wh': wh,
-            'reg': reg
-        }
+        pred = {"cls": cls, "wh": wh, "reg": reg}
         return pred
