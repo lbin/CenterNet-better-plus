@@ -4,17 +4,13 @@ import sys
 
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
-from detectron2.engine import launch
-from detectron2.engine.defaults import default_argument_parser, default_setup
+from detectron2.engine import launch, default_argument_parser, default_setup
 from detectron2.evaluation import COCOEvaluator
 from detectron2.evaluation.testing import verify_results
 from detectron2.utils import comm
 
 from centernet.config import add_centernet_config
 from centernet.defaults import DefaultTrainer2
-
-sys.path.insert(0, ".")  # noqa: E402
-
 
 class Trainer(DefaultTrainer2):
     @classmethod
@@ -38,9 +34,6 @@ def setup(args):
 
 
 def main(args):
-    # config.merge_from_list(args.opts)
-    # cfg, logger = default_setup(config, args)
-
     cfg = setup(args)
 
     if args.eval_only:
