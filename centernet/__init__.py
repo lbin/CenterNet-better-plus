@@ -1,2 +1,2 @@
-from .arch import CenterNet
-from .config import add_centernet_config
+# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+from .centernet import CenterNet

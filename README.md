@@ -2,10 +2,6 @@
 
 This repo is implemented based on [detectron2](https://github.com/facebookresearch/detectron2) and [CenterNet-better](https://github.com/FateScript/CenterNet-better/edit/master/README.md)
 
-## Motivation
-
-[Objects as Points](https://arxiv.org/abs/1904.07850) is **also** one of my favorite paper in object detection area. However, its [code](https://github.com/xingyizhou/CenterNet/blob/master/README.md) is a little difficult to understand. I believe that CenterNet could get higher pts and implemented in a more elegant way, **and [CenterNet-better](https://github.com/FateScript/CenterNet-better/edit/master/README.md) didn't understand detectron's design logic, and made it very difficult to catchup it,** so I write this repo.
-
 ** TO BE UPDATE **
 ## Performance
 
