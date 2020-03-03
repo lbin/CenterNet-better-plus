@@ -261,7 +261,7 @@ class CenterNet(nn.Module):
         Normalize, pad and batch the input images.
         """
         images = [x["image"].to(self.device) for x in batched_inputs]
-        images = [self.normalizer(img / 255) for img in images]
+        images = [self.normalizer(img) for img in images]
         images = ImageList.from_tensors(images, self.backbone.size_divisibility)
         return images
 
