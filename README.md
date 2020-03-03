@@ -2,71 +2,60 @@
 
 This repo is implemented based on [detectron2](https://github.com/facebookresearch/detectron2) and [CenterNet-better](https://github.com/FateScript/CenterNet-better/edit/master/README.md)
 
-** TO BE UPDATE **
-## Performance
+## Requirements
 
-This repo use less training time to get a better performance, it nearly spend half training time and get 1~2 pts higher mAP compared with the old repo. Here is the table of performance.
+- Python >= 3.6
+- PyTorch >= 1.4
+- torchvision that matches the PyTorch installation.
+- OpenCV
+- pycocotools
 
-| Backbone     |  mAP    |  FPS    |  trained model    |  
-|--------------|---------|---------|-------------------|  
-|ResNet-18     | 29.8    | 92      |  [google drive](https://drive.google.com/open?id=1D3tO95sdlsh9egOjOg0N-2HHmMfqbt5X)   |  
-|ResNet-50     | 34.9    | 57      |  [google drive](https://drive.google.com/open?id=1t5Bw520_fJrn3aeSVxDBYNIgwpNdLR5s)   |  
-|ResNet-101    | 36.8    | 43      |  [google drive](https://drive.google.com/open?id=1762Y93i9QreUTHq-87Ir73R2nNcrHuk0)   |  
-
-## What\'s New?
-* **treat config as a object.** You could run your config file and check the config value, which is really helpful for debug.
-* **Common training / testing scripts in default.** you just need to invoke `dl_train/test --num-gpus x` in your playground and your projects only need to include all project-specific configs and network modules.
-* **Performance report is dumped automaticly.** After your training is over, we will evaluate your model automatically and generate a markdown file.
-* **Vectorize some operations.** This improves the speed and efficiency.
-
-## What\'s comming
-  - [ ] Support DLA backbone
-  - [ ] Support Hourglass backbone
-  - [ ] Support KeyPoints dataset
-
-## Get started
-### Requirements
-* Python >= 3.6
-* PyTorch >= 1.3
-* torchvision that matches the PyTorch installation.
-* OpenCV
-* pycocotools
 ```shell
 pip install cython; pip install 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
 ```
-* GCC >= 4.9
+
+- GCC >= 4.9
+
 ```shell
 gcc --version
 ```
 
-### Installation
+- detectron2
 
-Make sure that your get at least one gpu when compiled. Run:
 ```shell
-pip install -e .
+pip install -U 'git+https://github.com/facebookresearch/detectron2.git'
 ```
 
 ### Training
-For example, if you want to train CenterNet with resnet-18 backbone, run:
-```shell
-cd playground/centernet.res18.coco.512size
-dl_train --num-gpus 8
-```
-After training process, a README.md file will be generated automatically and this file will report your model\'s performance.  
 
-NOTE: For ResNet-18 and ResNet-50 backbone, we suppose your machine has over 150GB Memory for training. If your memory is not enough, please change NUM_WORKER (in config.py) to a smaller value.
+```shell
+python train_net.py --num-gpus 8 --config-file configs/centernet_r_18_C4_1x.yaml
+```
 
 ### Testing and Evaluation
+
 ```shell
-dl_test --num-gpus 8 
+python train_net.py --num-gpus 8 --config-file configs/centernet_r_18_C4_1x.yaml --eval-only MODEL.WEIGHTS model_0007999.pth
 ```
-test downloaded model:
-```shell
-dl_test --num-gpus 8  MODEL.WEIGHTS path/to/your/save_dir/ckpt.pth 
-```
-~~
+
+## Performance
+
+This repo use less training time to get a better performance, it nearly spend half training time and get 1~2 pts higher mAP compared with the old repo. Here is the table of performance.
+
+| Backbone   | mAP | FPS | trained model |
+| ---------- | --- | --- | ------------- |
+| ResNet-18  |     |     |               |
+| ResNet-50  |     |     |               |
+| ResNet-101 |     |     |               |
+
+## What\'s comming
+
+- [ ] Support DLA backbone
+- [ ] Support Hourglass backbone
+- [ ] Support KeyPoints dataset
 
 ## Acknowledgement
-* [detectron2](https://github.com/facebookresearch/detectron2)
-* [CenterNet](https://github.com/xingyizhou/CenterNet)
-* [CenterNet-better](https://github.com/FateScript/CenterNet-better/edit/master/README.md)
+
+- [detectron2](https://github.com/facebookresearch/detectron2)
+- [CenterNet](https://github.com/xingyizhou/CenterNet)
+- [CenterNet-better](https://github.com/FateScript/CenterNet-better)

@@ -1,5 +1,6 @@
 MODEL:
   META_ARCHITECTURE: "CenterNet"
+  MASK_ON: False
   BACKBONE:
     NAME: "build_torch_backbone"
   RESNETS:

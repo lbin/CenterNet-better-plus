@@ -4,13 +4,14 @@ import sys
 
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
-from detectron2.engine import launch, default_argument_parser, default_setup
+from detectron2.engine import default_argument_parser, default_setup, launch
 from detectron2.evaluation import COCOEvaluator
 from detectron2.evaluation.testing import verify_results
 from detectron2.utils import comm
 
 from centernet.config import add_centernet_config
 from centernet.defaults import DefaultTrainer2
+
 
 class Trainer(DefaultTrainer2):
     @classmethod
