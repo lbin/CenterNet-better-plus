@@ -10,7 +10,6 @@ since they are meant to represent the "common default behavior" people need in t
 
 import logging
 
-import torch
 from detectron2.data import build_detection_test_loader, build_detection_train_loader
 from detectron2.engine.defaults import DefaultTrainer
 

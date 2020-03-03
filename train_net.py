@@ -1,6 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import os
-import sys
 
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg

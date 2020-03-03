@@ -94,17 +94,6 @@ def build_torch_backbone(cfg, input_shape=None):
     assert isinstance(backbone, Backbone)
     return backbone
 
-
-def build_upsample_layers(cfg,):
-    upsample = CenternetDeconv(cfg)
-    return upsample
-
-
-def build_head(cfg,):
-    head = CenternetHead(cfg)
-    return head
-
-
 @META_ARCH_REGISTRY.register()
 class CenterNet(nn.Module):
     """
@@ -126,20 +115,10 @@ class CenterNet(nn.Module):
         self.backbone = build_backbone(
             cfg, input_shape=ShapeSpec(channels=len(cfg.MODEL.PIXEL_MEAN))
         )
-        self.upsample = build_upsample_layers(cfg)
-        self.head = build_head(cfg)
-        # self.cls_head = cfg.build_cls_head(cfg)
-        # self.wh_head = cfg.build_width_height_head(cfg)
-        # self.reg_head = cfg.build_center_reg_head(cfg)
-
-        # backbone_shape = self.backbone.output_shape()
-        # feature_shapes = [backbone_shape[f] for f in self.in_features]
+        self.upsample = CenternetDeconv(cfg)
+        self.head = CenternetHead(cfg)
 
         self.mean, self.std = cfg.MODEL.PIXEL_MEAN, cfg.MODEL.PIXEL_STD
-        # pixel_mean = torch.Tensor(self.mean).to(self.device).view(3, 1, 1)
-        # pixel_std = torch.Tensor(self.std).to(self.device).view(3, 1, 1)
-        # self.normalizer = lambda x: (x - pixel_mean) / pixel_std
-
         pixel_mean = torch.Tensor(cfg.MODEL.PIXEL_MEAN).to(self.device).view(3, 1, 1)
         pixel_std = torch.Tensor(cfg.MODEL.PIXEL_STD).to(self.device).view(3, 1, 1)
         self.normalizer = lambda x: (x - pixel_mean) / pixel_std

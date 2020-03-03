@@ -19,7 +19,7 @@ def add_centernet_config(cfg):
     _C.MODEL.CENTERNET.DOWN_SCALE = 4
     _C.MODEL.CENTERNET.MIN_OVERLAP = 0.7
     _C.MODEL.CENTERNET.TENSOR_DIM = 128
-    _C.MODEL.CENTERNET.IN_FEATURES = ["p5"]
+    _C.MODEL.CENTERNET.IN_FEATURES = ["res5"]
     _C.MODEL.CENTERNET.OUTPUT_SIZE = [128, 128]
     _C.MODEL.CENTERNET.TRAIN_PIPELINES = [
         ("CenterAffine", dict(boarder=128, output_size=(512, 512), random_aug=True)),

@@ -3,10 +3,10 @@ import logging
 
 import numpy as np
 import torch
+from detectron2.data import detection_utils as utils
 from fvcore.common.file_io import PathManager
 from PIL import Image
 
-from . import detection_utils as utils
 from . import transforms as T
 
 """
@@ -14,6 +14,41 @@ This file contains the default mapping that's applied to "dataset dicts".
 """
 
 __all__ = ["DatasetMapper"]
+
+
+def build_transform_gen(cfg, is_train):
+    """
+    Create a list of :class:`TransformGen` from config.
+    Now it includes resizing and flipping.
+
+    Returns:
+        list[TransformGen]
+    """
+    logger = logging.getLogger(__name__)
+
+    tfm_gens = []
+
+    if is_train:
+        for (aug, args) in cfg.MODEL.CENTERNET.TRAIN_PIPELINES:
+            if aug == "ResizeShortestEdge":
+                check_sample_valid(args)
+            tfm_gens.append(getattr(T, aug)(**args))
+    else:
+        for (aug, args) in cfg.MODEL.CENTERNET.TEST_PIPELINES:
+            if aug == "ResizeShortestEdge":
+                check_sample_valid(args)
+            tfm_gens.append(getattr(T, aug)(**args))
+
+    logger.info("TransformGens used: " + str(tfm_gens))
+
+    return tfm_gens
+
+
+def check_sample_valid(args):
+    if args["sample_style"] == "range":
+        assert (
+            len(args["min_size"]) == 2
+        ), f"more than 2 ({len(args['min_size'])}) min_size(s) are provided for ranges"
 
 
 class DatasetMapper:
@@ -41,7 +76,7 @@ class DatasetMapper:
 
         self.eval_with_gt = cfg.TEST.get("WITH_GT", False)
 
-        self.tfm_gens = utils.build_transform_gen(cfg, is_train)
+        self.tfm_gens = build_transform_gen(cfg, is_train)
 
         # fmt: off
         self.img_format     = cfg.INPUT.FORMAT
