@@ -94,6 +94,7 @@ def build_torch_backbone(cfg, input_shape=None):
     assert isinstance(backbone, Backbone)
     return backbone
 
+
 @META_ARCH_REGISTRY.register()
 class CenterNet(nn.Module):
     """
