@@ -42,9 +42,12 @@ python train_net.py --num-gpus 8 --config-file configs/centernet_r_18_C4_1x.yaml
 
 This repo use less training time to get a better performance, it nearly spend half training time and get 1~2 pts higher mAP compared with the old repo. Here is the table of performance.
 
-| Backbone  | mAP | FPS | trained model |
-| --------- | --- | --- | ------------- |
-| ResNet-50 |     | 56  |               |
+Backbone ResNet-50
+
+| Code             | mAP    | FPS  |
+| ---------------- | ------ | ---- |
+| ours             |        | 56   |
+| centernet-better | 35.089 | 59.5 |
 
 ## What\'s comming
 
