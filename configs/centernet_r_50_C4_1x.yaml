@@ -9,7 +9,7 @@ MODEL:
   RESNETS:
     DEPTH: 50
     OUT_FEATURES: ["res5"]
-  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  # WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
   PIXEL_MEAN: [0.485, 0.456, 0.406]
   PIXEL_STD: [0.229, 0.224, 0.225]
 
