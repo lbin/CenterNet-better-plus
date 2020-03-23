@@ -149,7 +149,7 @@ class CenterNet(nn.Module):
             return self.inference(images)
 
         features = self.backbone(images.tensor)
-        features = features[self.cfg.MODEL.RESNETS.OUT_FEATURES[0]]
+        # features = features[self.cfg.MODEL.RESNETS.OUT_FEATURES[0]]
         up_fmap = self.upsample(features)
         pred_dict = self.head(up_fmap)
 
@@ -228,7 +228,7 @@ class CenterNet(nn.Module):
         aligned_img[..., pad_h : h + pad_h, pad_w : w + pad_w] = images.tensor
 
         features = self.backbone(aligned_img)
-        features = features[self.cfg.MODEL.RESNETS.OUT_FEATURES[0]]
+        # features = features[self.cfg.MODEL.RESNETS.OUT_FEATURES[0]]
         up_fmap = self.upsample(features)
         pred_dict = self.head(up_fmap)
         results = self.decode_prediction(pred_dict, img_info)
@@ -263,7 +263,7 @@ class CenterNet(nn.Module):
         Normalize, pad and batch the input images.
         """
         images = [x["image"].to(self.device) for x in batched_inputs]
-        images = [self.normalizer(img) for img in images]
+        images = [self.normalizer(img/255.) for img in images]
         images = ImageList.from_tensors(images, self.backbone.size_divisibility)
         return images
 
