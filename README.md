@@ -44,16 +44,25 @@ This repo use less training time to get a better performance, it nearly spend ha
 
 Backbone ResNet-50
 
-| Code             | mAP  | FPS |
-| ---------------- | ---- | --- |
-| ours             |      | 56  |
-| centernet-better | 35.1 | 57  |
+| Code             | mAP/FPS |
+| ---------------- | ------- |
+| ours             |         |
+| centernet-better | 35.1/57 |
 
-Backbone ResNet-50
-| Code             | mAP  | FPS |
-| ---------------- | ---- | --- |
-| ours             |      |     |
-| centernet-better | 29.8 | 92  |
+Backbone ResNet-18
+| Code             | mAP/FPS |
+| ---------------- | ------- |
+| ours             |         |
+| centernet-better | 29.8/92 |
+
+### Refer from origin project
+
+| Backbone      | AP / FPS   |
+| ------------- | ---------- |
+| Hourglass-104 | 40.3 / 14  |
+| DLA-34        | 37.4 / 52  |
+| ResNet-101    | 34.6 / 45  |
+| ResNet-18     | 28.1 / 142 |
 
 ## What\'s comming
 
